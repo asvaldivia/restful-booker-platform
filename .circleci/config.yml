@@ -398,129 +398,129 @@ jobs:
               working_directory: assets
 
   run_e2e_tests_ephemeral:
-  machine:
-    image: ubuntu-2204:2023.10.1
-  resource_class: large
-  steps:
-    - checkout
-    
-    - run:
-        name: Login to Docker Hub
-        command: |
-          echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
-    
-    - run:
-        name: Pull Docker images
-        command: |
-          echo "Pulling all service images..."
-          docker pull $DOCKER_USER/restfulbookerplatform_auth:latest
-          docker pull $DOCKER_USER/restfulbookerplatform_booking:latest
-          docker pull $DOCKER_USER/restfulbookerplatform_room:latest
-          docker pull $DOCKER_USER/restfulbookerplatform_report:latest
-          docker pull $DOCKER_USER/restfulbookerplatform_branding:latest
-          docker pull $DOCKER_USER/restfulbookerplatform_message:latest
-          docker pull $DOCKER_USER/restfulbookerplatform_assets:latest
-          echo "All images pulled successfully"
-    
-    - run:
-        name: Create Docker network
-        command: |
-          docker network create rbp-host
-    
-    - run:
-        name: Start all microservices
-        command: |
-          echo "Starting auth service..."
-          docker run -d --network rbp-host --name rbp-auth \
-            -e profile=prod -e dbRefresh=10 -p 3004:3004 \
-            $DOCKER_USER/restfulbookerplatform_auth:latest
-          
-          echo "Starting booking service..."
-          docker run -d --network rbp-host --name rbp-booking \
-            -e profile=prod -e dbRefresh=10 -p 3000:3000 \
-            $DOCKER_USER/restfulbookerplatform_booking:latest
-          
-          echo "Starting room service..."
-          docker run -d --network rbp-host --name rbp-room \
-            -e profile=prod -e dbRefresh=10 -p 3001:3001 \
-            $DOCKER_USER/restfulbookerplatform_room:latest
-          
-          echo "Starting report service..."
-          docker run -d --network rbp-host --name rbp-report \
-            -e profile=prod -p 3005:3005 \
-            $DOCKER_USER/restfulbookerplatform_report:latest
-          
-          echo "Starting branding service..."
-          docker run -d --network rbp-host --name rbp-branding \
-            -e profile=prod -e dbRefresh=10 -p 3002:3002 \
-            $DOCKER_USER/restfulbookerplatform_branding:latest
-          
-          echo "Starting message service..."
-          docker run -d --network rbp-host --name rbp-message \
-            -e profile=prod -e dbRefresh=10 -p 3006:3006 \
-            $DOCKER_USER/restfulbookerplatform_message:latest
-          
-          echo "Starting assets service..."
-          docker run -d --network rbp-host --name rbp-assets \
-            -e profile=prod -p 3003:3003 \
-            $DOCKER_USER/restfulbookerplatform_assets:latest
-          
-          echo "All services started"
-    
-    - run:
-        name: Wait for services to be ready
-        command: |
-          echo "Waiting for services to start..."
-          sleep 30
-          
-          echo "Checking service health..."
-          curl --retry 10 --retry-delay 5 --retry-connrefused http://localhost:3004/auth/actuator/health || echo "Auth health check failed"
-          curl --retry 10 --retry-delay 5 --retry-connrefused http://localhost:3000/booking/actuator/health || echo "Booking health check failed"
-          curl --retry 10 --retry-delay 5 --retry-connrefused http://localhost:3001/room/actuator/health || echo "Room health check failed"
-          curl --retry 10 --retry-delay 5 --retry-connrefused http://localhost:3005/report/actuator/health || echo "Report health check failed"
-          curl --retry 10 --retry-delay 5 --retry-connrefused http://localhost:3002/branding/actuator/health || echo "Branding health check failed"
-          curl --retry 10 --retry-delay 5 --retry-connrefused http://localhost:3006/message/actuator/health || echo "Message health check failed"
-          curl --retry 10 --retry-delay 5 --retry-connrefused http://localhost:3003 || echo "Assets health check failed"
-          
-          echo "All services are ready"
-    
-    - run:
-        name: Show running containers
-        command: |
-          docker ps
-          echo "Checking logs for any startup errors..."
-          docker logs rbp-auth --tail 20
-    
-    - run:
-        name: Run Cypress E2E tests
-        command: |
-          cd end-to-end-tests
-          # Adjust this based on how your e2e tests are structured
-          # If using Maven:
-          mvn clean test -Drevision=$(git rev-parse --short HEAD)
-          # Or if using npm/cypress directly:
-          # npm install
-          # npx cypress run --config baseUrl=http://localhost:3003
-        environment:
-          TARGET: localhost
-          BROWSER: chrome
-    
-    - run:
-        name: Cleanup (runs even on failure)
-        when: always
-        command: |
-          echo "Stopping and removing all containers..."
-          docker stop rbp-auth rbp-booking rbp-room rbp-report rbp-branding rbp-message rbp-assets || true
-          docker rm rbp-auth rbp-booking rbp-room rbp-report rbp-branding rbp-message rbp-assets || true
-          docker network rm rbp-host || true
-          echo "Cleanup complete"
-    
-    - store_test_results:
-        path: end-to-end-tests/target/surefire-reports
-    
-    - store_artifacts:
-        path: end-to-end-tests/target
-
+    machine:
+      image: ubuntu-2204:2023.10.1
+    resource_class: large
+    steps:
+      - checkout
+      
+      - run:
+          name: Login to Docker Hub
+          command: |
+            echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
+      
+      - run:
+          name: Pull Docker images
+          command: |
+            echo "Pulling all service images..."
+            docker pull $DOCKER_USER/restfulbookerplatform_auth:latest
+            docker pull $DOCKER_USER/restfulbookerplatform_booking:latest
+            docker pull $DOCKER_USER/restfulbookerplatform_room:latest
+            docker pull $DOCKER_USER/restfulbookerplatform_report:latest
+            docker pull $DOCKER_USER/restfulbookerplatform_branding:latest
+            docker pull $DOCKER_USER/restfulbookerplatform_message:latest
+            docker pull $DOCKER_USER/restfulbookerplatform_assets:latest
+            echo "All images pulled successfully"
+      
+      - run:
+          name: Create Docker network
+          command: |
+            docker network create rbp-host
+      
+      - run:
+          name: Start all microservices
+          command: |
+            echo "Starting auth service..."
+            docker run -d --network rbp-host --name rbp-auth \
+              -e profile=prod -e dbRefresh=10 -p 3004:3004 \
+              $DOCKER_USER/restfulbookerplatform_auth:latest
+            
+            echo "Starting booking service..."
+            docker run -d --network rbp-host --name rbp-booking \
+              -e profile=prod -e dbRefresh=10 -p 3000:3000 \
+              $DOCKER_USER/restfulbookerplatform_booking:latest
+            
+            echo "Starting room service..."
+            docker run -d --network rbp-host --name rbp-room \
+              -e profile=prod -e dbRefresh=10 -p 3001:3001 \
+              $DOCKER_USER/restfulbookerplatform_room:latest
+            
+            echo "Starting report service..."
+            docker run -d --network rbp-host --name rbp-report \
+              -e profile=prod -p 3005:3005 \
+              $DOCKER_USER/restfulbookerplatform_report:latest
+            
+            echo "Starting branding service..."
+            docker run -d --network rbp-host --name rbp-branding \
+              -e profile=prod -e dbRefresh=10 -p 3002:3002 \
+              $DOCKER_USER/restfulbookerplatform_branding:latest
+            
+            echo "Starting message service..."
+            docker run -d --network rbp-host --name rbp-message \
+              -e profile=prod -e dbRefresh=10 -p 3006:3006 \
+              $DOCKER_USER/restfulbookerplatform_message:latest
+            
+            echo "Starting assets service..."
+            docker run -d --network rbp-host --name rbp-assets \
+              -e profile=prod -p 3003:3003 \
+              $DOCKER_USER/restfulbookerplatform_assets:latest
+            
+            echo "All services started"
+      
+      - run:
+          name: Wait for services to be ready
+          command: |
+            echo "Waiting for services to start..."
+            sleep 30
+            
+            echo "Checking service health..."
+            curl --retry 10 --retry-delay 5 --retry-connrefused http://localhost:3004/auth/actuator/health || echo "Auth health check failed"
+            curl --retry 10 --retry-delay 5 --retry-connrefused http://localhost:3000/booking/actuator/health || echo "Booking health check failed"
+            curl --retry 10 --retry-delay 5 --retry-connrefused http://localhost:3001/room/actuator/health || echo "Room health check failed"
+            curl --retry 10 --retry-delay 5 --retry-connrefused http://localhost:3005/report/actuator/health || echo "Report health check failed"
+            curl --retry 10 --retry-delay 5 --retry-connrefused http://localhost:3002/branding/actuator/health || echo "Branding health check failed"
+            curl --retry 10 --retry-delay 5 --retry-connrefused http://localhost:3006/message/actuator/health || echo "Message health check failed"
+            curl --retry 10 --retry-delay 5 --retry-connrefused http://localhost:3003 || echo "Assets health check failed"
+            
+            echo "All services are ready"
+      
+      - run:
+          name: Show running containers
+          command: |
+            docker ps
+            echo "Checking logs for any startup errors..."
+            docker logs rbp-auth --tail 20
+      
+      - run:
+          name: Run Cypress E2E tests
+          command: |
+            cd end-to-end-tests
+            # Adjust this based on how your e2e tests are structured
+            # If using Maven:
+            mvn clean test -Drevision=$(git rev-parse --short HEAD)
+            # Or if using npm/cypress directly:
+            # npm install
+            # npx cypress run --config baseUrl=http://localhost:3003
+          environment:
+            TARGET: localhost
+            BROWSER: chrome
+      
+      - run:
+          name: Cleanup (runs even on failure)
+          when: always
+          command: |
+            echo "Stopping and removing all containers..."
+            docker stop rbp-auth rbp-booking rbp-room rbp-report rbp-branding rbp-message rbp-assets || true
+            docker rm rbp-auth rbp-booking rbp-room rbp-report rbp-branding rbp-message rbp-assets || true
+            docker network rm rbp-host || true
+            echo "Cleanup complete"
+      
+      - store_test_results:
+          path: end-to-end-tests/target/surefire-reports
+      
+      - store_artifacts:
+          path: end-to-end-tests/target
+  
 
 workflows:
   version: 2
