@@ -230,13 +230,37 @@ jobs:
             docker_layer_caching: false
 
         - run:
+            name: Build and Push Booking Docker Image (Robust)
+            working_directory: booking
             command: |
-              if [ -f ~/project/booking/target/restful-booker-platform-booking-*-exec.jar ] && [ $CIRCLE_BRANCH == "trunk" ]; then
+              # Use 'find' to robustly locate the executable JAR and assign the full path to a variable.
+              JAR_FILE=$(find target -name "restful-booker-platform-booking-*-exec.jar" -print -quit)
+              
+              # Check for existence of the JAR file (non-empty variable) and the correct branch
+              if [ -n "$JAR_FILE" ] && [ "$CIRCLE_BRANCH" == "trunk" ]; then
                 echo "[BUILDING] Booking"
-                TAG=$(ls target/restful-booker-platform-booking-*-exec.jar | cut -d '-' -f 5 | cut -c1-11)
+                
+                # Extract the filename part (e.g., restful-booker-platform-booking-1.7.53116d9-exec.jar)
+                FILENAME=$(basename "$JAR_FILE")
+                
+                # Use 'cut' to reliably extract the version tag (the 5th hyphen-separated field, which is the revision)
+                # The cut logic provided by the user: | cut -d '-' -f 5 | cut -c1-11
+                TAG=$(echo "$FILENAME" | cut -d '-' -f 5 | cut -c1-11)
+                
+                if [ -z "$TAG" ]; then
+                  echo "[ERROR] Failed to extract version tag from JAR filename: $FILENAME. Skipping build."
+                  exit 1
+                fi
+
                 echo "[INFO] Image tag: $TAG"
+                
+                # Login
                 echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
+                
+                # Build
                 docker build -t $DOCKER_USER/restfulbookerplatform_booking:$TAG -t $DOCKER_USER/restfulbookerplatform_booking:latest .
+                
+                # Push
                 echo "[INFO] Pushing tag: $TAG"
                 docker push $DOCKER_USER/restfulbookerplatform_booking:$TAG
                 echo "[INFO] Pushing tag: latest"
@@ -244,8 +268,13 @@ jobs:
                 echo "[SUCCESS] Booking docker image built and pushed"
               else
                 echo "[SKIPPING] Booking"
+                if [ -z "$JAR_FILE" ]; then
+                  echo "Reason: JAR file not found in 'target/' after cache restore. Listing target/ contents for debugging:"
+                  ls -l target/
+                elif [ "$CIRCLE_BRANCH" != "trunk" ]; then
+                  echo "Reason: Current branch is '$CIRCLE_BRANCH', but required branch is 'trunk'."
+                fi
               fi
-              working_directory: booking
 
   build_report_docker_image:
 
