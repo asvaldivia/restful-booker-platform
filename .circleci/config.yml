@@ -203,9 +203,15 @@ jobs:
           command: |
             if [ -f ~/project/auth/target/restful-booker-platform-auth-*-exec.jar ] && [ $CIRCLE_BRANCH == "trunk" ]; then
               echo "[BUILDING] Auth"
+              TAG=$(ls target/restful-booker-platform-auth-*-exec.jar | cut -d '-' -f 5 | cut -c1-11)
+              echo "[INFO] Image tag: $TAG"
               echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
-              docker build -t $DOCKER_USER/restfulbookerplatform_auth:$(ls target/restful-booker-platform-auth-*-exec.jar | cut -d '-' -f 5 | cut -c1-11) .
-              docker push $DOCKER_USER/restfulbookerplatform_auth:$(ls target/restful-booker-platform-auth-*-exec.jar | cut -d '-' -f 5 | cut -c1-11)
+              docker build -t $DOCKER_USER/restfulbookerplatform_auth:$TAG -t $DOCKER_USER/restfulbookerplatform_auth:latest .
+              echo "[INFO] Pushing tag: $TAG"
+              docker push $DOCKER_USER/restfulbookerplatform_auth:$TAG
+              echo "[INFO] Pushing tag: latest"
+              docker push $DOCKER_USER/restfulbookerplatform_auth:latest
+              echo "[SUCCESS] Auth docker image built and pushed"
             else
               echo "[SKIPPING] Auth"
             fi
@@ -227,13 +233,19 @@ jobs:
             command: |
               if [ -f ~/project/booking/target/restful-booker-platform-booking-*-exec.jar ] && [ $CIRCLE_BRANCH == "trunk" ]; then
                 echo "[BUILDING] Booking"
+                TAG=$(ls target/restful-booker-platform-booking-*-exec.jar | cut -d '-' -f 5 | cut -c1-11)
+                echo "[INFO] Image tag: $TAG"
                 echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
-                docker build -t mwinteringham/restfulbookerplatform_booking:$(ls target/restful-booker-platform-booking-*-exec.jar | cut -d '-' -f 5 | cut -c1-11) .
-                docker push mwinteringham/restfulbookerplatform_booking:$(ls target/restful-booker-platform-booking-*-exec.jar | cut -d '-' -f 5 | cut -c1-11)
+                docker build -t $DOCKER_USER/restfulbookerplatform_booking:$TAG -t $DOCKER_USER/restfulbookerplatform_booking:latest .
+                echo "[INFO] Pushing tag: $TAG"
+                docker push $DOCKER_USER/restfulbookerplatform_booking:$TAG
+                echo "[INFO] Pushing tag: latest"
+                docker push $DOCKER_USER/restfulbookerplatform_booking:latest
+                echo "[SUCCESS] Booking docker image built and pushed"
               else
                 echo "[SKIPPING] Booking"
               fi
-            working_directory: booking
+              working_directory: booking
 
   build_report_docker_image:
 
@@ -251,9 +263,15 @@ jobs:
             command: |
               if [ -f ~/project/report/target/restful-booker-platform-report-*-exec.jar ] && [ $CIRCLE_BRANCH == "trunk" ]; then
                 echo "[BUILDING] Report"
+                TAG=$(ls target/restful-booker-platform-report-*-exec.jar | cut -d '-' -f 5 | cut -c1-11)
+                echo "[INFO] Image tag: $TAG"
                 echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
-                docker build -t mwinteringham/restfulbookerplatform_report:$(ls target/restful-booker-platform-report-*-exec.jar | cut -d '-' -f 5 | cut -c1-11) .
-                docker push mwinteringham/restfulbookerplatform_report:$(ls target/restful-booker-platform-report-*-exec.jar | cut -d '-' -f 5 | cut -c1-11)
+                docker build -t $DOCKER_USER/restfulbookerplatform_report:$TAG -t $DOCKER_USER/restfulbookerplatform_report:latest .
+                echo "[INFO] Pushing tag: $TAG"
+                docker push $DOCKER_USER/restfulbookerplatform_report:$TAG
+                echo "[INFO] Pushing tag: latest"
+                docker push $DOCKER_USER/restfulbookerplatform_report:latest
+                echo "[SUCCESS] Report docker image built and pushed"
               else
                 echo "[SKIPPING] Report"
               fi
@@ -275,9 +293,15 @@ jobs:
             command: |
               if [ -f ~/project/room/target/restful-booker-platform-room-*-exec.jar ] && [ $CIRCLE_BRANCH == "trunk" ]; then
                 echo "[BUILDING] Room"
+                TAG=$(ls target/restful-booker-platform-room-*-exec.jar | cut -d '-' -f 5 | cut -c1-11)
+                echo "[INFO] Image tag: $TAG"
                 echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
-                docker build -t mwinteringham/restfulbookerplatform_room:$(ls target/restful-booker-platform-room-*-exec.jar | cut -d '-' -f 5 | cut -c1-11) .
-                docker push mwinteringham/restfulbookerplatform_room:$(ls target/restful-booker-platform-room-*-exec.jar | cut -d '-' -f 5 | cut -c1-11)
+                docker build -t $DOCKER_USER/restfulbookerplatform_room:$TAG -t $DOCKER_USER/restfulbookerplatform_room:latest .
+                echo "[INFO] Pushing tag: $TAG"
+                docker push $DOCKER_USER/restfulbookerplatform_room:$TAG
+                echo "[INFO] Pushing tag: latest"
+                docker push $DOCKER_USER/restfulbookerplatform_room:latest
+                echo "[SUCCESS] Room docker image built and pushed"
               else
                 echo "[SKIPPING] Room"
               fi
@@ -299,9 +323,15 @@ jobs:
             command: |
               if [ -f ~/project/branding/target/restful-booker-platform-branding-*-exec.jar ] && [ $CIRCLE_BRANCH == "trunk" ]; then
                 echo "[BUILDING] Branding"
+                TAG=$(ls target/restful-booker-platform-branding-*-exec.jar | cut -d '-' -f 5 | cut -c1-11)
+                echo "[INFO] Image tag: $TAG"
                 echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
-                docker build -t mwinteringham/restfulbookerplatform_branding:$(ls target/restful-booker-platform-branding-*-exec.jar | cut -d '-' -f 5 | cut -c1-11) .
-                docker push mwinteringham/restfulbookerplatform_branding:$(ls target/restful-booker-platform-branding-*-exec.jar | cut -d '-' -f 5 | cut -c1-11)
+                docker build -t $DOCKER_USER/restfulbookerplatform_branding:$TAG -t $DOCKER_USER/restfulbookerplatform_branding:latest .
+                echo "[INFO] Pushing tag: $TAG"
+                docker push $DOCKER_USER/restfulbookerplatform_branding:$TAG
+                echo "[INFO] Pushing tag: latest"
+                docker push $DOCKER_USER/restfulbookerplatform_branding:latest
+                echo "[SUCCESS] Branding docker image built and pushed"
               else
                 echo "[SKIPPING] Branding"
               fi
@@ -323,9 +353,15 @@ jobs:
           command: |
             if [ -f ~/project/message/target/restful-booker-platform-message-*-exec.jar ] && [ $CIRCLE_BRANCH == "trunk" ]; then
               echo "[BUILDING] Message"
+              TAG=$(ls target/restful-booker-platform-message-*-exec.jar | cut -d '-' -f 5 | cut -c1-11)
+              echo "[INFO] Image tag: $TAG"
               echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
-              docker build -t mwinteringham/restfulbookerplatform_message:$(ls target/restful-booker-platform-message-*-exec.jar | cut -d '-' -f 5 | cut -c1-11) .
-              docker push mwinteringham/restfulbookerplatform_message:$(ls target/restful-booker-platform-message-*-exec.jar | cut -d '-' -f 5 | cut -c1-11)
+              docker build -t $DOCKER_USER/restfulbookerplatform_message:$TAG -t $DOCKER_USER/restfulbookerplatform_message:latest .
+              echo "[INFO] Pushing tag: $TAG"
+              docker push $DOCKER_USER/restfulbookerplatform_message:$TAG
+              echo "[INFO] Pushing tag: latest"
+              docker push $DOCKER_USER/restfulbookerplatform_message:latest
+              echo "[SUCCESS] Message docker image built and pushed"
             else
               echo "[SKIPPING] Message"
             fi
@@ -347,197 +383,152 @@ jobs:
               command: |
                 if [ -f ~/project/assets/api/target/restful-booker-platform-assets-*-exec.jar ] && [ $CIRCLE_BRANCH == "trunk" ]; then
                   echo "[BUILDING] Assets"
+                  TAG=$(ls api/target/restful-booker-platform-assets-*-exec.jar | cut -d '-' -f 5 | cut -c1-11)
+                  echo "[INFO] Image tag: $TAG"
                   echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
-                  docker build -t mwinteringham/restfulbookerplatform_assets:$(ls api/target/restful-booker-platform-assets-*-exec.jar | cut -d '-' -f 5 | cut -c1-11) .
-                  docker push mwinteringham/restfulbookerplatform_assets:$(ls api/target/restful-booker-platform-assets-*-exec.jar | cut -d '-' -f 5 | cut -c1-11)
+                  docker build -t $DOCKER_USER/restfulbookerplatform_assets:$TAG -t $DOCKER_USER/restfulbookerplatform_assets:latest .
+                  echo "[INFO] Pushing tag: $TAG"
+                  docker push $DOCKER_USER/restfulbookerplatform_assets:$TAG
+                  echo "[INFO] Pushing tag: latest"
+                  docker push $DOCKER_USER/restfulbookerplatform_assets:latest
+                  echo "[SUCCESS] Assets docker image built and pushed"
                 else
                   echo "[SKIPPING] Assets"
                 fi
               working_directory: assets
 
-  deploy_auth_docker_image:
+  run_e2e_tests_ephemeral:
+  machine:
+    image: ubuntu-2204:2023.10.1
+  resource_class: large
+  steps:
+    - checkout
+    
+    - run:
+        name: Login to Docker Hub
+        command: |
+          echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
+    
+    - run:
+        name: Pull Docker images
+        command: |
+          echo "Pulling all service images..."
+          docker pull $DOCKER_USER/restfulbookerplatform_auth:latest
+          docker pull $DOCKER_USER/restfulbookerplatform_booking:latest
+          docker pull $DOCKER_USER/restfulbookerplatform_room:latest
+          docker pull $DOCKER_USER/restfulbookerplatform_report:latest
+          docker pull $DOCKER_USER/restfulbookerplatform_branding:latest
+          docker pull $DOCKER_USER/restfulbookerplatform_message:latest
+          docker pull $DOCKER_USER/restfulbookerplatform_assets:latest
+          echo "All images pulled successfully"
+    
+    - run:
+        name: Create Docker network
+        command: |
+          docker network create rbp-host
+    
+    - run:
+        name: Start all microservices
+        command: |
+          echo "Starting auth service..."
+          docker run -d --network rbp-host --name rbp-auth \
+            -e profile=prod -e dbRefresh=10 -p 3004:3004 \
+            $DOCKER_USER/restfulbookerplatform_auth:latest
+          
+          echo "Starting booking service..."
+          docker run -d --network rbp-host --name rbp-booking \
+            -e profile=prod -e dbRefresh=10 -p 3000:3000 \
+            $DOCKER_USER/restfulbookerplatform_booking:latest
+          
+          echo "Starting room service..."
+          docker run -d --network rbp-host --name rbp-room \
+            -e profile=prod -e dbRefresh=10 -p 3001:3001 \
+            $DOCKER_USER/restfulbookerplatform_room:latest
+          
+          echo "Starting report service..."
+          docker run -d --network rbp-host --name rbp-report \
+            -e profile=prod -p 3005:3005 \
+            $DOCKER_USER/restfulbookerplatform_report:latest
+          
+          echo "Starting branding service..."
+          docker run -d --network rbp-host --name rbp-branding \
+            -e profile=prod -e dbRefresh=10 -p 3002:3002 \
+            $DOCKER_USER/restfulbookerplatform_branding:latest
+          
+          echo "Starting message service..."
+          docker run -d --network rbp-host --name rbp-message \
+            -e profile=prod -e dbRefresh=10 -p 3006:3006 \
+            $DOCKER_USER/restfulbookerplatform_message:latest
+          
+          echo "Starting assets service..."
+          docker run -d --network rbp-host --name rbp-assets \
+            -e profile=prod -p 3003:3003 \
+            $DOCKER_USER/restfulbookerplatform_assets:latest
+          
+          echo "All services started"
+    
+    - run:
+        name: Wait for services to be ready
+        command: |
+          echo "Waiting for services to start..."
+          sleep 30
+          
+          echo "Checking service health..."
+          curl --retry 10 --retry-delay 5 --retry-connrefused http://localhost:3004/auth/actuator/health || echo "Auth health check failed"
+          curl --retry 10 --retry-delay 5 --retry-connrefused http://localhost:3000/booking/actuator/health || echo "Booking health check failed"
+          curl --retry 10 --retry-delay 5 --retry-connrefused http://localhost:3001/room/actuator/health || echo "Room health check failed"
+          curl --retry 10 --retry-delay 5 --retry-connrefused http://localhost:3005/report/actuator/health || echo "Report health check failed"
+          curl --retry 10 --retry-delay 5 --retry-connrefused http://localhost:3002/branding/actuator/health || echo "Branding health check failed"
+          curl --retry 10 --retry-delay 5 --retry-connrefused http://localhost:3006/message/actuator/health || echo "Message health check failed"
+          curl --retry 10 --retry-delay 5 --retry-connrefused http://localhost:3003 || echo "Assets health check failed"
+          
+          echo "All services are ready"
+    
+    - run:
+        name: Show running containers
+        command: |
+          docker ps
+          echo "Checking logs for any startup errors..."
+          docker logs rbp-auth --tail 20
+    
+    - run:
+        name: Run Cypress E2E tests
+        command: |
+          cd end-to-end-tests
+          # Adjust this based on how your e2e tests are structured
+          # If using Maven:
+          mvn clean test -Drevision=$(git rev-parse --short HEAD)
+          # Or if using npm/cypress directly:
+          # npm install
+          # npx cypress run --config baseUrl=http://localhost:3003
+        environment:
+          TARGET: localhost
+          BROWSER: chrome
+    
+    - run:
+        name: Cleanup (runs even on failure)
+        when: always
+        command: |
+          echo "Stopping and removing all containers..."
+          docker stop rbp-auth rbp-booking rbp-room rbp-report rbp-branding rbp-message rbp-assets || true
+          docker rm rbp-auth rbp-booking rbp-room rbp-report rbp-branding rbp-message rbp-assets || true
+          docker network rm rbp-host || true
+          echo "Cleanup complete"
+    
+    - store_test_results:
+        path: end-to-end-tests/target/surefire-reports
+    
+    - store_artifacts:
+        path: end-to-end-tests/target
 
-    docker:
-      - image: cimg/openjdk:18.0
-
-    steps:
-      - restore_cache:
-          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
-      - add_ssh_keys:
-          fingerprints:
-            - "1c:eb:8d:d5:b6:56:34:09:bd:db:bb:de:d2:94:42:33"
-      - run:
-          command: |
-            if [ -f /home/circleci/tmp/auth.txt ] && [ $CIRCLE_BRANCH == "trunk" ]; then
-              echo "[DEPLOYING] Auth"
-              version=`find ~/tmp/*.tmp -printf "%f\n"`
-              ssh-keyscan $AWS_IP >> $HOME/.ssh/known_hosts
-              ssh ec2-user@$AWS_IP 'container=`sudo docker ps -aqf "name=rbp-auth"` && sudo docker stop $container && sudo docker rm $container && sudo docker run -d --network rbp-host --name rbp-auth -e profile='prod' -e HONEYCOMB_API_KEY='$HONEYCOMB_API_KEY' -e dbRefresh='10' -p 3004:3004 mwinteringham/restfulbookerplatform_auth:'${version%.*}' && exit'
-            else
-              echo "[SKIPPING] Auth"
-            fi
-
-  deploy_booking_docker_image:
-
-    docker:
-      - image: cimg/openjdk:18.0
-
-    steps:
-      - restore_cache:
-          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
-      - add_ssh_keys:
-          fingerprints:
-            - "1c:eb:8d:d5:b6:56:34:09:bd:db:bb:de:d2:94:42:33"
-      - run:
-          command: |
-            if [ -f /home/circleci/tmp/booking.txt ] && [ $CIRCLE_BRANCH == "trunk" ]; then
-              echo "[DEPLOYING] Booking"
-              version=`find ~/tmp/*.tmp -printf "%f\n"`
-              ssh-keyscan $AWS_IP >> $HOME/.ssh/known_hosts
-              ssh ec2-user@$AWS_IP 'container=`sudo docker ps -aqf "name=rbp-booking"` && sudo docker stop $container && sudo docker rm $container && sudo docker run -d --network rbp-host --name rbp-booking -p 3000:3000 -e profile='prod' -e dbRefresh='10' -e HONEYCOMB_API_KEY='$HONEYCOMB_API_KEY' mwinteringham/restfulbookerplatform_booking:'${version%.*}' && exit'
-            else
-              echo "[SKIPPING] Booking"
-            fi
-
-  deploy_report_docker_image:
-
-      docker:
-        - image: cimg/openjdk:18.0
-
-      steps:
-        - restore_cache:
-            key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
-        - add_ssh_keys:
-            fingerprints:
-              - "1c:eb:8d:d5:b6:56:34:09:bd:db:bb:de:d2:94:42:33"
-        - run:
-            command: |
-              if [ -f /home/circleci/tmp/report.txt ] && [ $CIRCLE_BRANCH == "trunk" ]; then
-                echo "[DEPLOYING] Report"
-                version=`find ~/tmp/*.tmp -printf "%f\n"`
-                ssh-keyscan $AWS_IP >> $HOME/.ssh/known_hosts
-                ssh ec2-user@$AWS_IP 'container=`sudo docker ps -aqf "name=rbp-report"` && sudo docker stop $container && sudo docker rm $container && sudo docker run -d --network rbp-host --name rbp-report -e profile='prod' -p 3005:3005 mwinteringham/restfulbookerplatform_report:'${version%.*}' && exit'
-              else
-                echo "[SKIPPING] Report"
-              fi
-
-  deploy_room_docker_image:
-
-    docker:
-      - image: cimg/openjdk:18.0
-
-    steps:
-      - restore_cache:
-          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
-      - add_ssh_keys:
-          fingerprints:
-            - "1c:eb:8d:d5:b6:56:34:09:bd:db:bb:de:d2:94:42:33"
-      - run:
-          command: |
-            if [ -f /home/circleci/tmp/room.txt ] && [ $CIRCLE_BRANCH == "trunk" ]; then
-              echo "[DEPLOYING] Room"
-              version=`find ~/tmp/*.tmp -printf "%f\n"`
-              ssh-keyscan $AWS_IP >> $HOME/.ssh/known_hosts
-              ssh ec2-user@$AWS_IP 'container=`sudo docker ps -aqf "name=rbp-room"` && sudo docker stop $container && sudo docker rm $container && sudo docker run -d --network rbp-host --name rbp-room -p 3001:3001 -e profile='prod' -e dbRefresh='10' mwinteringham/restfulbookerplatform_room:'${version%.*}' && exit'
-            else
-              echo "[SKIPPING] Room"
-            fi
-
-  deploy_branding_docker_image:
-
-    docker:
-      - image: cimg/openjdk:18.0
-
-    steps:
-      - restore_cache:
-          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
-      - add_ssh_keys:
-          fingerprints:
-            - "1c:eb:8d:d5:b6:56:34:09:bd:db:bb:de:d2:94:42:33"
-      - run:
-          command: |
-            if [ -f /home/circleci/tmp/branding.txt ] && [ $CIRCLE_BRANCH == "trunk" ]; then
-              echo "[DEPLOYING] Branding"
-              version=`find ~/tmp/*.tmp -printf "%f\n"`
-              ssh-keyscan $AWS_IP >> $HOME/.ssh/known_hosts
-              ssh ec2-user@$AWS_IP 'container=`sudo docker ps -aqf "name=rbp-branding"` && sudo docker stop $container && sudo docker rm $container && sudo docker run -d --network rbp-host --name rbp-branding -p 3002:3002 -e profile='prod' -e dbRefresh='10' -e HONEYCOMB_API_KEY='$HONEYCOMB_API_KEY' mwinteringham/restfulbookerplatform_branding:'${version%.*}' && exit'
-            else
-              echo "[SKIPPING] Branding"
-            fi
-
-  deploy_message_docker_image:
-
-    docker:
-      - image: cimg/openjdk:18.0
-
-    steps:
-      - restore_cache:
-          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
-      - add_ssh_keys:
-          fingerprints:
-            - "1c:eb:8d:d5:b6:56:34:09:bd:db:bb:de:d2:94:42:33"
-      - run:
-          command: |
-            if [ -f /home/circleci/tmp/message.txt ] && [ $CIRCLE_BRANCH == "trunk" ]; then
-              echo "[DEPLOYING] Message"
-              version=`find ~/tmp/*.tmp -printf "%f\n"`
-              ssh-keyscan $AWS_IP >> $HOME/.ssh/known_hosts
-              ssh ec2-user@$AWS_IP 'container=`sudo docker ps -aqf "name=rbp-message"` && sudo docker stop $container && sudo docker rm $container && sudo docker run -d --network rbp-host --name rbp-message -p 3006:3006 -e profile='prod' -e dbRefresh='10' mwinteringham/restfulbookerplatform_message:'${version%.*}' && exit'
-            else
-              echo "[SKIPPING] Message"
-            fi
-
-  deploy_assets_docker_image:
-
-    docker:
-      - image: cimg/openjdk:18.0-node
-
-    steps:
-      - restore_cache:
-          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
-      - add_ssh_keys:
-          fingerprints:
-            - "1c:eb:8d:d5:b6:56:34:09:bd:db:bb:de:d2:94:42:33"
-      - run:
-          command: |
-            if [ -f /home/circleci/tmp/assets.txt ] && [ $CIRCLE_BRANCH == "trunk" ]; then
-              echo "[DEPLOYING] Report"
-              version=`find ~/tmp/*.tmp -printf "%f\n"`
-              ssh-keyscan $AWS_IP >> $HOME/.ssh/known_hosts
-              ssh ec2-user@$AWS_IP 'container=`sudo docker ps -aqf "name=rbp-assets"` && sudo docker stop $container && sudo docker rm $container && sudo docker run -d --network rbp-host --name rbp-assets -e profile='prod' -p 3003:3003 mwinteringham/restfulbookerplatform_assets:'${version%.*}' && exit'
-            else
-              echo "[SKIPPING] Assets"
-            fi
-
-  run_e2e_checks:
-
-    docker:
-      - image: cimg/openjdk:18.0-browsers
-
-    steps:
-      - restore_cache:
-          key: v1-repo-{{ .Environment.CIRCLE_SHA1 }}
-      - run:
-          command: | 
-            if [ $CIRCLE_BRANCH == "trunk" ]; then
-              node prod_monitor.js
-            fi
-          working_directory: .utilities/monitor
-      - run:
-          command: | 
-            if [ $CIRCLE_BRANCH == "trunk" ]; then
-              mvn clean test -Drevision=$(git rev-parse --short HEAD)
-            fi
-          working_directory: end-to-end-tests
-          environment:
-            TARGET: production
-            BROWSER: remote
 
 workflows:
   version: 2
   build-test-and-deploy:
     jobs:
       - checkout_code
+      
+      # Build all services
       - run_auth_build:
           requires:
             - checkout_code
@@ -559,6 +550,8 @@ workflows:
       - run_assets_tests:
           requires:
             - checkout_code
+      
+      # Build Docker images
       - build_auth_docker_image:
           requires:
             - run_auth_build
@@ -580,33 +573,14 @@ workflows:
       - build_assets_docker_image:
           requires:
             - run_assets_tests
-      - deploy_auth_docker_image:
+      
+      # Run E2E tests in ephemeral environment
+      - run_e2e_tests_ephemeral:
           requires:
             - build_auth_docker_image
-      - deploy_booking_docker_image:
-          requires:
             - build_booking_docker_image
-      - deploy_report_docker_image:
-          requires:
             - build_report_docker_image
-      - deploy_room_docker_image:
-          requires:
             - build_room_docker_image
-      - deploy_branding_docker_image:
-          requires:
             - build_branding_docker_image
-      - deploy_message_docker_image:
-          requires:
             - build_message_docker_image
-      - deploy_assets_docker_image:
-          requires:
             - build_assets_docker_image
-      - run_e2e_checks:
-          requires:
-            - deploy_auth_docker_image
-            - deploy_booking_docker_image
-            - deploy_report_docker_image
-            - deploy_room_docker_image
-            - deploy_assets_docker_image
-            - deploy_branding_docker_image
-            - deploy_message_docker_image
