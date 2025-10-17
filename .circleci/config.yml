@@ -432,6 +432,14 @@ jobs:
     resource_class: large
     steps:
       - checkout
+
+        # NEW STEP: Checkout the Cypress E2E project into the designated directory
+      - run:
+          name: Checkout Cypress E2E Tests Repository
+          command: |
+            echo "Cloning Cypress repository using SSH..."
+            git clone git@github.com:asvaldivia/cypress-pom-example.git end-to-end-tests
+            echo "Cypress E2E tests checked out successfully into 'end-to-end-tests'."
       
       - run:
           name: Login to Docker Hub
@@ -524,12 +532,10 @@ jobs:
           name: Run Cypress E2E tests
           command: |
             cd end-to-end-tests
-            # Adjust this based on how your e2e tests are structured
-            # If using Maven:
-            mvn clean test -Drevision=$(git rev-parse --short HEAD)
-            # Or if using npm/cypress directly:
-            # npm install
-            # npx cypress run --config baseUrl=http://localhost:3003
+            # 1. Install Node dependencies
+            npm install
+            # 2. Run the Cypress tests using the script you defined
+            npm run cy:run:chrome
           environment:
             TARGET: localhost
             BROWSER: chrome
@@ -545,10 +551,13 @@ jobs:
             echo "Cleanup complete"
       
       - store_test_results:
-          path: end-to-end-tests/target/surefire-reports
-      
-      - store_artifacts:
-          path: end-to-end-tests/target
+          path: end-to-end-tests/mochawesome-report
+      
+      - store_artifacts:
+          path: end-to-end-tests/cypress/videos
+          
+      - store_artifacts:
+          path: end-to-end-tests/cypress/screenshots
   
 
 workflows:
