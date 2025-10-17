@@ -219,152 +219,152 @@ jobs:
 
   build_booking_docker_image:
 
-      docker:
-        - image: cimg/openjdk:18.0
+    docker:
+      - image: cimg/openjdk:18.0
 
-      steps:
-        - restore_cache:
-            key: v1-dependencies-{{ .Environment.CIRCLE_SHA1 }}-booking
+    steps:
+      - restore_cache:
+          key: v1-dependencies-{{ .Environment.CIRCLE_SHA1 }}-booking
 
-        - setup_remote_docker:
-            docker_layer_caching: false
+      - setup_remote_docker:
+          docker_layer_caching: false
 
-        - run:
-            name: Build and Push Booking Docker Image (Robust)
-            working_directory: booking
-            command: |
-              # Use 'find' to robustly locate the executable JAR and assign the full path to a variable.
-              JAR_FILE=$(find target -name "restful-booker-platform-booking-*-exec.jar" -print -quit)
+      - run:
+          name: Build and Push Booking Docker Image (Robust)
+          working_directory: booking
+          command: |
+            # Use 'find' to robustly locate the executable JAR and assign the full path to a variable.
+            JAR_FILE=$(find target -name "restful-booker-platform-booking-*-exec.jar" -print -quit)
+            
+            # Check for existence of the JAR file (non-empty variable) and the correct branch
+            if [ -n "$JAR_FILE" ] && [ "$CIRCLE_BRANCH" == "trunk" ]; then
+              echo "[BUILDING] Booking"
               
-              # Check for existence of the JAR file (non-empty variable) and the correct branch
-              if [ -n "$JAR_FILE" ] && [ "$CIRCLE_BRANCH" == "trunk" ]; then
-                echo "[BUILDING] Booking"
-                
-                # Extract the filename part (e.g., restful-booker-platform-booking-1.7.53116d9-exec.jar)
-                FILENAME=$(basename "$JAR_FILE")
-                
-                # Use 'cut' to reliably extract the version tag (the 5th hyphen-separated field, which is the revision)
-                # The cut logic provided by the user: | cut -d '-' -f 5 | cut -c1-11
-                TAG=$(echo "$FILENAME" | cut -d '-' -f 5 | cut -c1-11)
-                
-                if [ -z "$TAG" ]; then
-                  echo "[ERROR] Failed to extract version tag from JAR filename: $FILENAME. Skipping build."
-                  exit 1
-                fi
-
-                echo "[INFO] Image tag: $TAG"
-                
-                # Login
-                echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
-                
-                # Build
-                docker build -t $DOCKER_USER/restfulbookerplatform_booking:$TAG -t $DOCKER_USER/restfulbookerplatform_booking:latest .
-                
-                # Push
-                echo "[INFO] Pushing tag: $TAG"
-                docker push $DOCKER_USER/restfulbookerplatform_booking:$TAG
-                echo "[INFO] Pushing tag: latest"
-                docker push $DOCKER_USER/restfulbookerplatform_booking:latest
-                echo "[SUCCESS] Booking docker image built and pushed"
-              else
-                echo "[SKIPPING] Booking"
-                if [ -z "$JAR_FILE" ]; then
-                  echo "Reason: JAR file not found in 'target/' after cache restore. Listing target/ contents for debugging:"
-                  ls -l target/
-                elif [ "$CIRCLE_BRANCH" != "trunk" ]; then
-                  echo "Reason: Current branch is '$CIRCLE_BRANCH', but required branch is 'trunk'."
-                fi
+              # Extract the filename part (e.g., restful-booker-platform-booking-1.7.53116d9-exec.jar)
+              FILENAME=$(basename "$JAR_FILE")
+              
+              # Use 'cut' to reliably extract the version tag (the 5th hyphen-separated field, which is the revision)
+              # The cut logic provided by the user: | cut -d '-' -f 5 | cut -c1-11
+              TAG=$(echo "$FILENAME" | cut -d '-' -f 5 | cut -c1-11)
+              
+              if [ -z "$TAG" ]; then
+                echo "[ERROR] Failed to extract version tag from JAR filename: $FILENAME. Skipping build."
+                exit 1
               fi
+
+              echo "[INFO] Image tag: $TAG"
+              
+              # Login
+              echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
+              
+              # Build
+              docker build -t $DOCKER_USER/restfulbookerplatform_booking:$TAG -t $DOCKER_USER/restfulbookerplatform_booking:latest .
+              
+              # Push
+              echo "[INFO] Pushing tag: $TAG"
+              docker push $DOCKER_USER/restfulbookerplatform_booking:$TAG
+              echo "[INFO] Pushing tag: latest"
+              docker push $DOCKER_USER/restfulbookerplatform_booking:latest
+              echo "[SUCCESS] Booking docker image built and pushed"
+            else
+              echo "[SKIPPING] Booking"
+              if [ -z "$JAR_FILE" ]; then
+                echo "Reason: JAR file not found in 'target/' after cache restore. Listing target/ contents for debugging:"
+                ls -l target/
+              elif [ "$CIRCLE_BRANCH" != "trunk" ]; then
+                echo "Reason: Current branch is '$CIRCLE_BRANCH', but required branch is 'trunk'."
+              fi
+            fi
 
   build_report_docker_image:
 
-      docker:
-        - image: cimg/openjdk:18.0
+    docker:
+      - image: cimg/openjdk:18.0
 
-      steps:
-        - restore_cache:
-            key: v1-dependencies-{{ .Environment.CIRCLE_SHA1 }}-report
+    steps:
+      - restore_cache:
+          key: v1-dependencies-{{ .Environment.CIRCLE_SHA1 }}-report
 
-        - setup_remote_docker:
-            docker_layer_caching: false
+      - setup_remote_docker:
+          docker_layer_caching: false
 
-        - run:
-            command: |
-              if [ -f ~/project/report/target/restful-booker-platform-report-*-exec.jar ] && [ $CIRCLE_BRANCH == "trunk" ]; then
-                echo "[BUILDING] Report"
-                TAG=$(ls target/restful-booker-platform-report-*-exec.jar | cut -d '-' -f 5 | cut -c1-11)
-                echo "[INFO] Image tag: $TAG"
-                echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
-                docker build -t $DOCKER_USER/restfulbookerplatform_report:$TAG -t $DOCKER_USER/restfulbookerplatform_report:latest .
-                echo "[INFO] Pushing tag: $TAG"
-                docker push $DOCKER_USER/restfulbookerplatform_report:$TAG
-                echo "[INFO] Pushing tag: latest"
-                docker push $DOCKER_USER/restfulbookerplatform_report:latest
-                echo "[SUCCESS] Report docker image built and pushed"
-              else
-                echo "[SKIPPING] Report"
-              fi
-            working_directory: report
+      - run:
+          command: |
+            if [ -f ~/project/report/target/restful-booker-platform-report-*-exec.jar ] && [ $CIRCLE_BRANCH == "trunk" ]; then
+              echo "[BUILDING] Report"
+              TAG=$(ls target/restful-booker-platform-report-*-exec.jar | cut -d '-' -f 5 | cut -c1-11)
+              echo "[INFO] Image tag: $TAG"
+              echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
+              docker build -t $DOCKER_USER/restfulbookerplatform_report:$TAG -t $DOCKER_USER/restfulbookerplatform_report:latest .
+              echo "[INFO] Pushing tag: $TAG"
+              docker push $DOCKER_USER/restfulbookerplatform_report:$TAG
+              echo "[INFO] Pushing tag: latest"
+              docker push $DOCKER_USER/restfulbookerplatform_report:latest
+              echo "[SUCCESS] Report docker image built and pushed"
+            else
+              echo "[SKIPPING] Report"
+            fi
+          working_directory: report
 
   build_room_docker_image:
 
-      docker:
-        - image: cimg/openjdk:18.0
+    docker:
+      - image: cimg/openjdk:18.0
 
-      steps:
-        - restore_cache:
-            key: v1-dependencies-{{ .Environment.CIRCLE_SHA1 }}-room
+    steps:
+      - restore_cache:
+          key: v1-dependencies-{{ .Environment.CIRCLE_SHA1 }}-room
 
-        - setup_remote_docker:
-            docker_layer_caching: false
+      - setup_remote_docker:
+          docker_layer_caching: false
 
-        - run:
-            command: |
-              if [ -f ~/project/room/target/restful-booker-platform-room-*-exec.jar ] && [ $CIRCLE_BRANCH == "trunk" ]; then
-                echo "[BUILDING] Room"
-                TAG=$(ls target/restful-booker-platform-room-*-exec.jar | cut -d '-' -f 5 | cut -c1-11)
-                echo "[INFO] Image tag: $TAG"
-                echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
-                docker build -t $DOCKER_USER/restfulbookerplatform_room:$TAG -t $DOCKER_USER/restfulbookerplatform_room:latest .
-                echo "[INFO] Pushing tag: $TAG"
-                docker push $DOCKER_USER/restfulbookerplatform_room:$TAG
-                echo "[INFO] Pushing tag: latest"
-                docker push $DOCKER_USER/restfulbookerplatform_room:latest
-                echo "[SUCCESS] Room docker image built and pushed"
-              else
-                echo "[SKIPPING] Room"
-              fi
-            working_directory: room
+      - run:
+          command: |
+            if [ -f ~/project/room/target/restful-booker-platform-room-*-exec.jar ] && [ $CIRCLE_BRANCH == "trunk" ]; then
+              echo "[BUILDING] Room"
+              TAG=$(ls target/restful-booker-platform-room-*-exec.jar | cut -d '-' -f 5 | cut -c1-11)
+              echo "[INFO] Image tag: $TAG"
+              echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
+              docker build -t $DOCKER_USER/restfulbookerplatform_room:$TAG -t $DOCKER_USER/restfulbookerplatform_room:latest .
+              echo "[INFO] Pushing tag: $TAG"
+              docker push $DOCKER_USER/restfulbookerplatform_room:$TAG
+              echo "[INFO] Pushing tag: latest"
+              docker push $DOCKER_USER/restfulbookerplatform_room:latest
+              echo "[SUCCESS] Room docker image built and pushed"
+            else
+              echo "[SKIPPING] Room"
+            fi
+          working_directory: room
 
   build_branding_docker_image:
 
-      docker:
-        - image: cimg/openjdk:18.0
+    docker:
+      - image: cimg/openjdk:18.0
 
-      steps:
-        - restore_cache:
-            key: v1-dependencies-{{ .Environment.CIRCLE_SHA1 }}-branding
+    steps:
+      - restore_cache:
+          key: v1-dependencies-{{ .Environment.CIRCLE_SHA1 }}-branding
 
-        - setup_remote_docker:
-            docker_layer_caching: false
+      - setup_remote_docker:
+          docker_layer_caching: false
 
-        - run:
-            command: |
-              if [ -f ~/project/branding/target/restful-booker-platform-branding-*-exec.jar ] && [ $CIRCLE_BRANCH == "trunk" ]; then
-                echo "[BUILDING] Branding"
-                TAG=$(ls target/restful-booker-platform-branding-*-exec.jar | cut -d '-' -f 5 | cut -c1-11)
-                echo "[INFO] Image tag: $TAG"
-                echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
-                docker build -t $DOCKER_USER/restfulbookerplatform_branding:$TAG -t $DOCKER_USER/restfulbookerplatform_branding:latest .
-                echo "[INFO] Pushing tag: $TAG"
-                docker push $DOCKER_USER/restfulbookerplatform_branding:$TAG
-                echo "[INFO] Pushing tag: latest"
-                docker push $DOCKER_USER/restfulbookerplatform_branding:latest
-                echo "[SUCCESS] Branding docker image built and pushed"
-              else
-                echo "[SKIPPING] Branding"
-              fi
-            working_directory: branding
+      - run:
+          command: |
+            if [ -f ~/project/branding/target/restful-booker-platform-branding-*-exec.jar ] && [ $CIRCLE_BRANCH == "trunk" ]; then
+              echo "[BUILDING] Branding"
+              TAG=$(ls target/restful-booker-platform-branding-*-exec.jar | cut -d '-' -f 5 | cut -c1-11)
+              echo "[INFO] Image tag: $TAG"
+              echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
+              docker build -t $DOCKER_USER/restfulbookerplatform_branding:$TAG -t $DOCKER_USER/restfulbookerplatform_branding:latest .
+              echo "[INFO] Pushing tag: $TAG"
+              docker push $DOCKER_USER/restfulbookerplatform_branding:$TAG
+              echo "[INFO] Pushing tag: latest"
+              docker push $DOCKER_USER/restfulbookerplatform_branding:latest
+              echo "[SUCCESS] Branding docker image built and pushed"
+            else
+              echo "[SKIPPING] Branding"
+            fi
+          working_directory: branding
 
   build_message_docker_image:
 
@@ -398,33 +398,33 @@ jobs:
 
   build_assets_docker_image:
 
-        docker:
-          - image: cimg/openjdk:18.0-node
+    docker:
+      - image: cimg/openjdk:18.0-node
 
-        steps:
-          - restore_cache:
-              key: v1-dependencies-{{ .Environment.CIRCLE_SHA1 }}-assets
+    steps:
+      - restore_cache:
+          key: v1-dependencies-{{ .Environment.CIRCLE_SHA1 }}-assets
 
-          - setup_remote_docker:
-              docker_layer_caching: false
+      - setup_remote_docker:
+          docker_layer_caching: false
 
-          - run:
-              command: |
-                if [ -f ~/project/assets/api/target/restful-booker-platform-assets-*-exec.jar ] && [ $CIRCLE_BRANCH == "trunk" ]; then
-                  echo "[BUILDING] Assets"
-                  TAG=$(ls api/target/restful-booker-platform-assets-*-exec.jar | cut -d '-' -f 5 | cut -c1-11)
-                  echo "[INFO] Image tag: $TAG"
-                  echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
-                  docker build -t $DOCKER_USER/restfulbookerplatform_assets:$TAG -t $DOCKER_USER/restfulbookerplatform_assets:latest .
-                  echo "[INFO] Pushing tag: $TAG"
-                  docker push $DOCKER_USER/restfulbookerplatform_assets:$TAG
-                  echo "[INFO] Pushing tag: latest"
-                  docker push $DOCKER_USER/restfulbookerplatform_assets:latest
-                  echo "[SUCCESS] Assets docker image built and pushed"
-                else
-                  echo "[SKIPPING] Assets"
-                fi
-              working_directory: assets
+      - run:
+          command: |
+            if [ -f ~/project/assets/api/target/restful-booker-platform-assets-*-exec.jar ] && [ $CIRCLE_BRANCH == "trunk" ]; then
+              echo "[BUILDING] Assets"
+              TAG=$(ls api/target/restful-booker-platform-assets-*-exec.jar | cut -d '-' -f 5 | cut -c1-11)
+              echo "[INFO] Image tag: $TAG"
+              echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
+              docker build -t $DOCKER_USER/restfulbookerplatform_assets:$TAG -t $DOCKER_USER/restfulbookerplatform_assets:latest .
+              echo "[INFO] Pushing tag: $TAG"
+              docker push $DOCKER_USER/restfulbookerplatform_assets:$TAG
+              echo "[INFO] Pushing tag: latest"
+              docker push $DOCKER_USER/restfulbookerplatform_assets:latest
+              echo "[SUCCESS] Assets docker image built and pushed"
+            else
+              echo "[SKIPPING] Assets"
+            fi
+          working_directory: assets
 
   run_e2e_tests_ephemeral:
     machine:
@@ -433,7 +433,7 @@ jobs:
     steps:
       - checkout
 
-        # NEW STEP: Checkout the Cypress E2E project into the designated directory
+      # NEW STEP: Checkout the Cypress E2E project into the designated directory
       - run:
           name: Checkout Cypress E2E Tests Repository
           command: |
@@ -527,7 +527,7 @@ jobs:
             docker ps
             echo "Checking logs for any startup errors..."
             docker logs rbp-auth --tail 20
-      
+            
       - run:
           name: Run Cypress E2E tests
           command: |
@@ -549,13 +549,13 @@ jobs:
             echo "Cleanup complete"
       
       - store_test_results:
-          path: end-to-end-tests/mochawesome-report
-      
-      - store_artifacts:
-          path: end-to-end-tests/cypress/videos
-          
-      - store_artifacts:
-          path: end-to-end-tests/cypress/screenshots
+          path: end-to-end-tests/mochawesome-report
+      
+      - store_artifacts:
+          path: end-to-end-tests/cypress/videos
+          
+      - store_artifacts:
+          path: end-to-end-tests/cypress/screenshots
   
 
 workflows:
