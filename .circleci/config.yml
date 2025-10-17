@@ -532,9 +532,7 @@ jobs:
           name: Run Cypress E2E tests
           command: |
             cd end-to-end-tests
-            # 1. Install Node dependencies
             npm install
-            # 2. Run the Cypress tests using the script you defined
             npm run cy:run:chrome
           environment:
             TARGET: localhost
