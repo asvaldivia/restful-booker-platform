@@ -532,8 +532,8 @@ jobs:
           name: Run Cypress E2E tests
           command: |
             cd end-to-end-tests
-            npm install
-            npm run cy:run:chrome
+            npm install
+            npm run cy:run:chrome
           environment:
             TARGET: localhost
             BROWSER: chrome
