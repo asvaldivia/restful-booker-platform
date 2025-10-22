@@ -438,8 +438,8 @@ jobs:
           name: Checkout Cypress E2E Tests Repository
           command: |
             echo "Cloning Cypress repository using SSH..."
-            git clone git@github.com:asvaldivia/cypress-pom-example.git end-to-end-tests
-            echo "Cypress E2E tests checked out successfully into 'end-to-end-tests'."
+            git clone git@github.com:asvaldivia/cypress-pom-example.git cypress-tests
+            echo "Cypress E2E tests checked out successfully into 'cypress-tests'."
       
       - run:
           name: Login to Docker Hub
@@ -531,7 +531,7 @@ jobs:
       - run:
           name: Run Cypress E2E tests
           command: |
-            cd end-to-end-tests
+            cd cypress-tests
             npm install
             npm run cy:run:chrome
           environment:
