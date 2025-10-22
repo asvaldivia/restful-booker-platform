@@ -549,13 +549,13 @@ jobs:
             echo "Cleanup complete"
       
       - store_test_results:
-          path: end-to-end-tests/mochawesome-report
+          path: cypress-tests/mochawesome-report
       
       - store_artifacts:
-          path: end-to-end-tests/cypress/videos
+          path: cypress-tests/cypress/videos
           
       - store_artifacts:
-          path: end-to-end-tests/cypress/screenshots
+          path: cypress-tests/cypress/screenshots
   
 
 workflows:
