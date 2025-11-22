@@ -1,4 +1,4 @@
-FROM openjdk:18-slim
+FROM eclipse-temurin:18-jre-alpine
 
 ADD . /usr/local/booking
 
