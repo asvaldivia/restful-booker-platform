@@ -582,14 +582,18 @@ jobs:
         name: Store Mochawesome HTML Report
         path: cypress-tests/cypress/reports
         destination: mochawesome-report
+        
       - store_artifacts:
         name: Store Merged JSON Data
         path: cypress-tests/cypress/results/merged.json
         destination: mochawesome-data
+        
       - store_test_results:
         path: cypress-tests/mochawesome-report
+        
       - store_artifacts:
         path: cypress-tests/cypress/videos
+        
       - store_artifacts:
         path: cypress-tests/cypress/screenshots
   
