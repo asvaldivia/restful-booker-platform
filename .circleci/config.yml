@@ -562,10 +562,11 @@ jobs:
           command: |
             cd cypress-tests
             npm install
-            npm run cy:run:chrome
+            npm run cy:run:full -- --env BASE_URL=http://localhost:${PROXY_PORT}
           environment:
             TARGET: localhost
             BROWSER: chrome
+            PROXY_PORT: 80
       
       - run:
           name: Cleanup (runs even on failure)
@@ -577,14 +578,20 @@ jobs:
             docker network rm rbp-host || true
             echo "Cleanup complete"
       
+      - store_artifacts:
+        name: Store Mochawesome HTML Report
+        path: cypress-tests/cypress/reports
+        destination: mochawesome-report
+      - store_artifacts:
+        name: Store Merged JSON Data
+        path: cypress-tests/cypress/results/merged.json
+        destination: mochawesome-data
       - store_test_results:
-          path: cypress-tests/mochawesome-report
-      
+        path: cypress-tests/mochawesome-report
       - store_artifacts:
-          path: cypress-tests/cypress/videos
-          
+        path: cypress-tests/cypress/videos
       - store_artifacts:
-          path: cypress-tests/cypress/screenshots
+        path: cypress-tests/cypress/screenshots
   
 
 workflows:
