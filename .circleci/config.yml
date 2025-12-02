@@ -581,7 +581,6 @@ jobs:
       - store_artifacts:
         name: Store Mochawesome HTML Report
         path: cypress-tests/cypress/reports
-        destination: mochawesome-report
         
       - store_test_results:
         path: cypress-tests/mochawesome-report
