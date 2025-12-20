@@ -582,6 +582,14 @@ jobs:
           name: Store Mochawesome HTML Report
           path: cypress-tests/cypress/reports
 
+      - store_artifacts:
+          name: Store Cypress Screenshots
+          path: cypress-tests/cypress/screenshots
+
+      - store_artifacts:
+          name: Store Cypress Videos
+          path: cypress-tests/cypress/videos
+
 workflows:
   version: 2
   build-test-and-deploy:
