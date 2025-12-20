@@ -579,8 +579,8 @@ jobs:
             echo "Cleanup complete"
       
       - store_artifacts:
-        name: Store Mochawesome HTML Report
-        path: cypress-tests/cypress/reports
+          name: Store Mochawesome HTML Report
+          path: cypress-tests/cypress/reports
 
 workflows:
   version: 2
