@@ -590,6 +590,26 @@ jobs:
           name: Store Cypress Videos
           path: cypress-tests/cypress/videos
 
+      - run:
+          name: Send Report Link to Discord
+          when: always
+          command: |
+            REPORT_URL="https://output.circle-artifacts.com/output/job/${CIRCLE_WORKFLOW_JOB_ID}/artifacts/0/cypress-tests/cypress/reports/report.html"
+            curl -X POST -H "Content-Type: application/json" \
+            -d '{
+              "username": "CircleCI Cypress Bot",
+              "embeds": [{
+                "title": "Cypress E2E Test Report",
+                "description": "Tests have completed. Click the link below to view the full HTML report.",
+                "url": "'"${REPORT_URL}"'",
+                "color": 3066993,
+                "fields": [
+                  { "name": "Job Number", "value": "'"${CIRCLE_BUILD_NUM}"'", "inline": true },
+                  { "name": "Branch", "value": "'"${CIRCLE_BRANCH}"'", "inline": true }
+                ]
+              }]
+            }' $DISCORD_WEBHOOK_URL
+
 workflows:
   version: 2
   build-test-and-deploy:
