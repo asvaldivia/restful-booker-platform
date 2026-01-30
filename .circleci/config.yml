@@ -611,21 +611,25 @@ jobs:
               STATUS_TEXT="FAILED"
             fi
             
-            curl -X POST -H "Content-Type: application/json" \
-            -d '{
+            HTTP_BODY=$(cat <<EOF
+            {
               "username": "CircleCI Cypress Bot",
               "embeds": [{
-                "title": "Cypress E2E Test Report - " '"${STATUS_TEXT}"',
+                "title": "Cypress E2E Test Report - ${STATUS_TEXT}",
                 "description": "Tests have completed. Click the link below to view the full HTML report.",
-                "url": "'"${REPORT_URL}"'",
-                "color": '"${COLOR}"',
+                "url": "${REPORT_URL}",
+                "color": ${COLOR},
                 "fields": [
-                  { "name": "Job Status", "value": "'"${STATUS_TEXT}"'", "inline": true },
-                  { "name": "Job Number", "value": "'"${CIRCLE_BUILD_NUM}"'", "inline": true },
-                  { "name": "Branch", "value": "'"${CIRCLE_BRANCH}"'", "inline": true }
+                  { "name": "Job Status", "value": "${STATUS_TEXT}", "inline": true },
+                  { "name": "Job Number", "value": "${CIRCLE_BUILD_NUM}", "inline": true },
+                  { "name": "Branch", "value": "${CIRCLE_BRANCH}", "inline": true }
                 ]
               }]
-            }' $DISCORD_WEBHOOK_URL
+            }
+            EOF
+            )
+
+            curl -X POST -H "Content-Type: application/json" -d "$HTTP_BODY" $DISCORD_WEBHOOK_URL
 
 workflows:
   version: 2
