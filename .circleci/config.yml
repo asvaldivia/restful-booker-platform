@@ -562,7 +562,13 @@ jobs:
           command: |
             cd cypress-tests
             npm install
-            npm run cy:run:full -- --env BASE_URL=http://localhost:${PROXY_PORT}
+            echo "failed" > ~/test_status
+            if npm run cy:run:full -- --env BASE_URL=http://localhost:${PROXY_PORT}; then
+              echo "success" > ~/test_status
+            else
+              echo "failed" > ~/test_status
+              exit 1
+            fi
           environment:
             TARGET: localhost
             BROWSER: chrome
@@ -594,16 +600,27 @@ jobs:
           name: Send Report Link to Discord
           when: always
           command: |
+            TEST_RESULT=$(cat ~/test_status)
             REPORT_URL="https://output.circle-artifacts.com/output/job/${CIRCLE_WORKFLOW_JOB_ID}/artifacts/0/cypress-tests/cypress/reports/report.html"
+
+            if [ "$TEST_RESULT" = "success" ]; then
+              COLOR=3066993
+              STATUS_TEXT="PASSED"
+            else
+              COLOR=15158332
+              STATUS_TEXT="FAILED"
+            fi
+            
             curl -X POST -H "Content-Type: application/json" \
             -d '{
               "username": "CircleCI Cypress Bot",
               "embeds": [{
-                "title": "Cypress E2E Test Report",
+                "title": "Cypress E2E Test Report - " '"${STATUS_TEXT}"',
                 "description": "Tests have completed. Click the link below to view the full HTML report.",
                 "url": "'"${REPORT_URL}"'",
-                "color": 3066993,
+                "color": '"${COLOR}"',
                 "fields": [
+                  { "name": "Job Status", "value": "'"${STATUS_TEXT}"'", "inline": true },
                   { "name": "Job Number", "value": "'"${CIRCLE_BUILD_NUM}"'", "inline": true },
                   { "name": "Branch", "value": "'"${CIRCLE_BRANCH}"'", "inline": true }
                 ]
