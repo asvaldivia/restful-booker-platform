@@ -563,12 +563,23 @@ jobs:
             cd cypress-tests
             npm install
             echo "failed" > ~/test_status
-            if npm run cy:run:full -- --env BASE_URL=http://localhost:${PROXY_PORT}; then
+
+            set +e
+            npm run cy:run:full:cicd -- --env BASE_URL=http://localhost:${PROXY_PORT}
+            # 3. Capture the exit code immediately
+            TEST_EXIT_CODE=$?
+            set -e # Turn exit-on-error back on
+            
+            # 4. Update the status file based on the captured code
+            if [ $TEST_EXIT_CODE -eq 0 ]; then
               echo "success" > ~/test_status
+              echo "Tests passed!"
             else
               echo "failed" > ~/test_status
-              exit 1
+              echo "Tests failed with exit code $TEST_EXIT_CODE"
             fi
+
+            exit $TEST_EXIT_CODE
           environment:
             TARGET: localhost
             BROWSER: chrome
@@ -600,7 +611,7 @@ jobs:
           name: Send Report Link to Discord
           when: always
           command: |
-            TEST_RESULT=$(cat ~/test_status)
+            TEST_RESULT=$(cat ~/test_status 2>/dev/null || echo "failed")
             REPORT_URL="https://output.circle-artifacts.com/output/job/${CIRCLE_WORKFLOW_JOB_ID}/artifacts/0/cypress-tests/cypress/reports/report.html"
 
             if [ "$TEST_RESULT" = "success" ]; then
